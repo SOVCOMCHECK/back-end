@@ -1,6 +1,8 @@
 package ru.sovcomcheck.back_end.photoservice.services.impls;
 
 import io.minio.BucketExistsArgs;
+import io.minio.CopyObjectArgs;
+import io.minio.CopySource;
 import io.minio.GetObjectArgs;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.ListObjectsArgs;
@@ -118,6 +120,34 @@ public class FileServiceImpl implements FileService {
         return "successfully deleted";
     }
 
+    @Override
+    public FileDTO moveFile(String filename, String sourceBucket, String targetBucket) {
+        try {
+            String newFilename = "perm_" + filename;
+            minioClient.copyObject(
+                    CopyObjectArgs.builder()
+                            .source(CopySource.builder().bucket(sourceBucket).object(filename).build())
+                            .bucket(targetBucket)
+                            .object(newFilename)
+                            .build()
+            );
+
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(sourceBucket)
+                            .object(filename)
+                            .build()
+            );
+
+            return FileDTO.builder()
+                    .filename(newFilename)
+                    .url(getPreSignedUrl(newFilename, targetBucket))
+                    .build();
+        } catch (Exception e) {
+            throw new ImageUploadException("Failed to move file: " + filename, e);
+        }
+    }
+
     private String getPreSignedUrl(String filename, String bucket) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         return minioClient.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()
@@ -133,6 +163,7 @@ public class FileServiceImpl implements FileService {
                 .size(file.getSize())
                 .url(getPreSignedUrl(objectName, bucket))
                 .filename(objectName)
+                .file(file)
                 .build();
     }
 

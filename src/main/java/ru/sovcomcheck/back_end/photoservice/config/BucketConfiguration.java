@@ -14,4 +14,7 @@ public class BucketConfiguration {
     @Value("${minio.buckets.avatars}")
     private String avatarsBucket;
 
+    @Value("${minio.buckets.temp-checks}")
+    private String tempChecksBucket;
+
 }

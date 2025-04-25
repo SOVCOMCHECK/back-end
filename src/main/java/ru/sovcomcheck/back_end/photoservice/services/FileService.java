@@ -22,4 +22,6 @@ public interface FileService {
     byte[] downloadFile(String filename, String bucket);
 
     String deleteFile(String file, String bucket);
+
+    FileDTO moveFile(String filename, String sourceBucket, String targetBucket);
 }

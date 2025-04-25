@@ -8,6 +8,7 @@ import ru.sovcomcheck.back_end.photoservice.config.BucketConfiguration;
 @Getter
 public enum BucketEnum {
     AVATARS,
+    TEMP_CHECKS,
     CHECKS;
 
     private String bucketName;
@@ -23,6 +24,7 @@ public enum BucketEnum {
         public BucketEnumInitializer(BucketConfiguration bucketConfiguration) {
             AVATARS.setBucketName(bucketConfiguration.getAvatarsBucket());
             CHECKS.setBucketName(bucketConfiguration.getChecksBucket());
+            TEMP_CHECKS.setBucketName(bucketConfiguration.getTempChecksBucket());
         }
     }
 }

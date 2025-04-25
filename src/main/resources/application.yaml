@@ -8,6 +8,8 @@ spring:
       host: localhost
       port: 27017
       database: mongodb
+  kafka:
+    bootstrap-servers: localhost:9092
 
 minio:
   url: http://localhost:9000
@@ -16,6 +18,12 @@ minio:
   buckets:
     avatars: avatars
     checks: checks
+    temp-checks: temp-checks
+
+receipt:
+  api:
+    url: https://proverkacheka.com/api/v1/check/get
+    token: 32540.G5winiT7cjsbp6Pa5
 
 server:
   port: 8080
