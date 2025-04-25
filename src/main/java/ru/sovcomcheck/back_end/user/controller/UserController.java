@@ -13,6 +13,7 @@ import ru.sovcomcheck.back_end.user.service.UserService;
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private final UserService userService;
 

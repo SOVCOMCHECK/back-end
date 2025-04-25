@@ -29,7 +29,6 @@ public class NotificationService {
         List<NotificationDto> notificationDtoList = new ArrayList<>();
         for (Notification notification : notificationList) {
             notificationDtoList.add(notificationMapper.entityToDto(notification));
-            deleteById(notification.getId());
         }
         return notificationDtoList;
     }
@@ -38,11 +37,15 @@ public class NotificationService {
         return notificationRepository.findAllByUserId(userId);
     }
 
-    public void deleteById(String id) {
-        notificationRepository.deleteById(id);
-    }
-
     public List<Notification> getAllNotification() {
         return notificationRepository.findAll();
+    }
+
+    public Notification delete(String id) {
+        Notification notification = notificationRepository.findById(id).orElse(null);
+        if (notification != null) {
+            notificationRepository.delete(notification);
+        }
+        return notification;
     }
 }

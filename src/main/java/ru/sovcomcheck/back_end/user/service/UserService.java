@@ -44,7 +44,7 @@ public class UserService {
             fileService.deleteFile(user.getAvatar(), bucket);
         }
         FileDTO fileDTO = fileService.uploadFile(file, bucket);
-        user.setAvatar(fileDTO.getFilename());
+        user.setAvatar(fileDTO.getUrl());
         userRepository.save(user);
         return fileDTO;
     }
