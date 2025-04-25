@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-
   mongodb:
     image: 'mongo:latest'
     environment:
@@ -9,11 +8,16 @@ services:
       - 'MONGO_INITDB_ROOT_PASSWORD=mongodb'
       - 'MONGO_INITDB_ROOT_USERNAME=mongodb'
     ports:
-      - '27017'
+      - '27017:27017'
     volumes:
       - mongo-data:/mongo
     networks:
       - mynetwork
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   minio:
     image: minio/minio:latest
@@ -43,7 +47,7 @@ services:
       minio:
         condition: service_healthy
       mongodb:
-        condition: service_started
+        condition: service_healthy
     entrypoint: >
       /bin/sh -c "
       until /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin; do

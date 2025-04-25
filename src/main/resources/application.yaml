@@ -5,9 +5,9 @@ spring:
       max-request-size: 200MB
   data:
     mongodb:
-      user: mongodb
-      password: mongodb
       uri: mongodb://localhost:27017/mongodb
+      username: mongodb
+      password: mongodb
 
 minio:
   url: http://localhost:9000
