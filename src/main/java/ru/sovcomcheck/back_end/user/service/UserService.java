@@ -40,12 +40,33 @@ public class UserService {
 
     public FileDTO uploadAvatar(MultipartFile file, String bucket, String id) throws Exception{
         User user = getUserById(id);
+        if(checkAvatarExist(user)) {
+            fileService.deleteFile(user.getAvatar(), bucket);
+        }
         FileDTO fileDTO = fileService.uploadFile(file, bucket);
         user.setAvatar(fileDTO.getFilename());
+        userRepository.save(user);
         return fileDTO;
     }
 
     public User getUserById(String id) {
         return userRepository.findById(id).orElseThrow();
+    }
+
+    public byte[] downloadAvatar(String id, String bucket) {
+        User user = getUserById(id);
+        return fileService.downloadFile(user.getAvatar(), bucket);
+    }
+
+    public boolean checkAvatarExist(User user) {
+        return user.getAvatar() != null;
+    }
+
+    public void updateUserById(String id, UserDto userDto) {
+        User user = getUserById(id);
+        user.setEmail(user.getEmail());
+        user.setFirstname(userDto.getFirstname());
+        user.setLastname(userDto.getLastname());
+        userRepository.save(user);
     }
 }
