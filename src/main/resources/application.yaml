@@ -14,8 +14,8 @@ minio:
   accessKey: minioadmin
   secretKey: minioadmin
   buckets:
-    books: avatars
-    covers: checks
+    avatars: avatars
+    checks: checks
 
 server:
   port: 8080
