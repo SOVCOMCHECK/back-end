@@ -48,6 +48,9 @@ public class CheckFacade {
             check.setIsApplied(false);
             check.setUserId(userId);
 
+            String qrCodeUrl = check.getData().getHtml();
+            check.getData().setHtml(qrCodeUrl.replace("/qrcode/generate", "https://proverkacheka.com/qrcode/generate"));
+
             // 3. Переносим фото в постоянный бакет
             FileDTO permanentFile = fileService.moveFile(
                     tempFile.getFilename(),
@@ -104,7 +107,7 @@ public class CheckFacade {
         document.setStatus(CheckStatus.APPROVED);
         document.setConfirmedAt(LocalDateTime.now());
         document.getCheckData().setIsApplied(true);
-//        document.setCategory(classifierApiService.predictCategory(document.getCheckData()));
+        document.setCategory(classifierApiService.predictCategory(document.getCheckData()));
         checkRepository.save(document);
         kafkaProducerService.sendCheck(document.getCheckData());
         notificationService.createNotification(new NotificationDto(document.getUserId(), String.format(MESSAGE_APPROVED_CHECK, formatDateString(document.getCheckData().getRequest().getManual().getCheckTime()))));

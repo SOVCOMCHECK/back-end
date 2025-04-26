@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import ru.sovcomcheck.back_end.checkservice.dtos.CheckProcessingResponse;
 import ru.sovcomcheck.back_end.checkservice.enums.ProcessingStatus;
 import ru.sovcomcheck.back_end.checkservice.facades.CheckFacade;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/checks")
 @RequiredArgsConstructor

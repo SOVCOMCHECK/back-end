@@ -10,7 +10,7 @@ import ru.sovcomcheck.back_end.checkservice.dtos.classifier.Prediction;
 
 @FeignClient(
         name = "classifierApiClient",
-        url = "http://127.0.0.1:5000",
+        url = "${ml-service.url}",
         configuration = FeignConfig.class
 )
 public interface ClassifierApiClient {

@@ -11,7 +11,7 @@ import ru.sovcomcheck.back_end.notification.service.NotificationService;
 @RestController
 @RequestMapping("/notifications")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin("*")
 public class NotificationController {
     private final NotificationService notificationService;
 
