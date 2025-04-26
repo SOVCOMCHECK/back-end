@@ -109,7 +109,7 @@ public class CheckFacade {
         document.getCheckData().setIsApplied(true);
         document.setCategory(classifierApiService.predictCategory(document.getCheckData()));
         checkRepository.save(document);
-        kafkaProducerService.sendCheck(document.getCheckData());
+        kafkaProducerService.sendCheck(document);
         notificationService.createNotification(new NotificationDto(document.getUserId(), String.format(MESSAGE_APPROVED_CHECK, formatDateString(document.getCheckData().getRequest().getManual().getCheckTime()))));
     }
 
@@ -126,6 +126,7 @@ public class CheckFacade {
     }
 
     private CheckProcessingResponse buildSuccessResponse(CheckDocument document) {
+        document.getCheckData().setId(document.getId());
         return CheckProcessingResponse.builder()
                 .checkId(document.getId())
                 .checkData(document.getCheckData())

@@ -12,7 +12,7 @@ import ru.sovcomcheck.back_end.checkservice.feign.ClassifierApiClient;
 public class ClassifierApiService {
     private final ClassifierApiClient classifierApiClient;
 
-    public String predictCategory(Check check)  {
+    public String predictCategory(Check check) {
 
         CheckMl dto = CheckMapping.toMl(check);
         return classifierApiClient.predictCategory(dto).getPredictedCategory();
