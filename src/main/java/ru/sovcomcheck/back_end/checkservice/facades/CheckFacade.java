@@ -16,11 +16,14 @@ import ru.sovcomcheck.back_end.checkservice.kafka.KafkaProducerService;
 import ru.sovcomcheck.back_end.checkservice.repositories.CheckRepository;
 import ru.sovcomcheck.back_end.checkservice.services.ClassifierApiService;
 import ru.sovcomcheck.back_end.checkservice.services.ReceiptApiService;
+import ru.sovcomcheck.back_end.notification.dto.NotificationDto;
+import ru.sovcomcheck.back_end.notification.service.NotificationService;
 import ru.sovcomcheck.back_end.photoservice.dtos.FileDTO;
 import ru.sovcomcheck.back_end.photoservice.enums.BucketEnum;
 import ru.sovcomcheck.back_end.photoservice.services.FileService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,9 @@ public class CheckFacade {
     private final CheckRepository checkRepository;
     private final KafkaProducerService kafkaProducerService;
     private final ClassifierApiService classifierApiService;
+    private final NotificationService notificationService;
+
+    private static final String MESSAGE_APPROVED_CHECK = "Чек от %s успешно загружен";
 
     @Transactional
     public CheckProcessingResponse processReceipt(String userId, MultipartFile file) {
@@ -98,9 +104,10 @@ public class CheckFacade {
         document.setStatus(CheckStatus.APPROVED);
         document.setConfirmedAt(LocalDateTime.now());
         document.getCheckData().setIsApplied(true);
-        document.setCategory(classifierApiService.predictCategory(document.getCheckData()));
+//        document.setCategory(classifierApiService.predictCategory(document.getCheckData()));
         checkRepository.save(document);
         kafkaProducerService.sendCheck(document.getCheckData());
+        notificationService.createNotification(new NotificationDto(document.getUserId(), String.format(MESSAGE_APPROVED_CHECK, formatDateString(document.getCheckData().getRequest().getManual().getCheckTime()))));
     }
 
     private void rejectCheck(CheckDocument document) {
@@ -129,5 +136,12 @@ public class CheckFacade {
                 .status(ProcessingStatus.FAILED)
                 .message(e.getMessage())
                 .build();
+    }
+
+    public static String formatDateString(String input) {
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd't'HHmm");
+        LocalDateTime dateTime = LocalDateTime.parse(input, inputFormatter);
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        return dateTime.format(outputFormatter);
     }
 }

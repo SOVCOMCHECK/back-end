@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+</head>
+<body>
+<h1>Notifications</h1>
+<ul id="notifications"></ul>
+
+<script>
+    const userId = "123"; // Захардкоженный userId
+
+    // Подключение к WebSocket
+    const socket = new SockJS('/ws');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+        // Подписка на топик для конкретного userId
+        stompClient.subscribe(`/topic/notifications/${userId}`, function (message) {
+            // Извлекаем только тело сообщения (message.body)
+            const messageBody = message.body;
+            addNotification(messageBody);
+        });
+    });
+
+    // Функция для добавления уведомлений на страницу
+    function addNotification(message) {
+        const notificationsList = document.getElementById('notifications');
+        const listItem = document.createElement('li');
+        listItem.textContent = message; // Выводим только текст сообщения
+        notificationsList.appendChild(listItem);
+    }
+</script>
+</body>
+</html>
