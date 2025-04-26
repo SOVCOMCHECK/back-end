@@ -1,0 +1,38 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: mongodb
+kafka:
+   bootstrap-servers: ${kafka_bootstrap_servers:localhost:9092}
+   topic:
+     checkTopic: check-topic
+   producer:
+     acks: all
+     retries: 3
+     linger-ms: 1
+
+minio:
+  url: ${minio_url:http://localhost:9000}
+  accessKey: ${minio_access_key:minioadmin}
+  secretKey: ${minio_secret_key:minioadmin}
+  buckets:
+    avatars: avatars
+    checks: checks
+    temp-checks: temp-checks
+
+receipt:
+  api:
+    url: https://proverkacheka.com/api/v1/check/get
+    token: 32540.G5winiT7cjsbp6Pa5
+
+ml-service:
+  url: ${ml_service_url}
+
+server:
+  port: 8080
