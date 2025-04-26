@@ -36,7 +36,7 @@ receipt:
     url: https://proverkacheka.com/api/v1/check/get
     token: 32540.G5winiT7cjsbp6Pa5
 ml-service:
-  url: http://localhost:5000
+  url: http://158.160.109.57:5000
 server:
   port: 8080
 

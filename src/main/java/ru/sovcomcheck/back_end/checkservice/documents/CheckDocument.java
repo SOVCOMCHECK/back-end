@@ -24,5 +24,4 @@ public class CheckDocument {
     private String category;
     private CheckStatus status;
     private LocalDateTime processedAt;
-    private LocalDateTime confirmedAt;
 }

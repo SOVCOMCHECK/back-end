@@ -29,6 +29,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @Slf4j
 @Service
@@ -85,7 +86,7 @@ public class CheckFacade {
                 .userId(check.getUserId())
                 .checkData(check)
                 .status(CheckStatus.PENDING)
-                .processedAt(LocalDateTime.now())
+                .processedAt(parseCheckTime(check.getRequest().getManual().getCheckTime()))
                 .build();
 
         return checkRepository.save(document);
@@ -118,7 +119,6 @@ public class CheckFacade {
 
     private void approveCheck(CheckDocument document) {
         document.setStatus(CheckStatus.APPROVED);
-        document.setConfirmedAt(LocalDateTime.now());
         document.getCheckData().setIsApplied(true);
         document.setCategory(classifierApiService.predictCategory(document.getCheckData()));
         checkRepository.save(document);
@@ -171,5 +171,14 @@ public class CheckFacade {
         LocalDateTime dateTime = LocalDateTime.parse(input, inputFormatter);
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         return dateTime.format(outputFormatter);
+    }
+
+    public static LocalDateTime parseCheckTime(String input) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd't'HHmm");
+            return LocalDateTime.parse(input, formatter);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Неверный формат времени чека: " + input, e);
+        }
     }
 }
