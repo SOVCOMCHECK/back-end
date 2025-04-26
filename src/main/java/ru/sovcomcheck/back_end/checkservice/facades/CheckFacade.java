@@ -1,6 +1,7 @@
 package ru.sovcomcheck.back_end.checkservice.facades;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import ru.sovcomcheck.back_end.photoservice.services.FileService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CheckFacade {
@@ -114,15 +116,23 @@ public class CheckFacade {
     }
 
     private void rejectCheck(CheckDocument document) {
-        fileService.deleteFile(
-                extractFilename(document.getCheckData().getImageUrl()),
-                BucketEnum.CHECKS.getBucketName()
-        );
+        String imageUrl = document.getCheckData().getImageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                String filename = extractFilename(imageUrl);
+                fileService.deleteFile(filename, BucketEnum.CHECKS.getBucketName());
+            } catch (Exception e) {
+                log.error("Error deleting file for check {}", document.getId(), e);
+            }
+        }
         checkRepository.delete(document);
     }
 
     private String extractFilename(String url) {
-        return url.substring(url.lastIndexOf('/') + 1);
+        if (url == null || url.isEmpty()) return "";
+        int lastSlashIndex = url.lastIndexOf('/');
+        if (lastSlashIndex == -1) return url;
+        return url.substring(lastSlashIndex + 1);
     }
 
     private CheckProcessingResponse buildSuccessResponse(CheckDocument document) {
