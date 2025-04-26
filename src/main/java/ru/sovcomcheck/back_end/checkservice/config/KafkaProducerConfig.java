@@ -11,6 +11,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import ru.sovcomcheck.back_end.checkservice.documents.CheckDocument;
 import ru.sovcomcheck.back_end.checkservice.dtos.Check;
 
 import java.util.HashMap;
@@ -33,17 +34,17 @@ public class KafkaProducerConfig {
         props.put(ProducerConfig.ACKS_CONFIG, "all");
         props.put(ProducerConfig.RETRIES_CONFIG, 3);
         props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
-        props.put(JsonSerializer.TYPE_MAPPINGS, "check:ru.sovcomcheck.back_end.checkservice.dtos.Check");
+        props.put(JsonSerializer.TYPE_MAPPINGS, "check:ru.sovcomcheck.back_end.checkservice.documents.CheckDocument");
         return props;
     }
 
     @Bean
-    public ProducerFactory<String, Check> checkProducerFactory() {
+    public ProducerFactory<String, CheckDocument> checkProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    public KafkaTemplate<String, Check> checkKafkaTemplate() {
+    public KafkaTemplate<String, CheckDocument> checkKafkaTemplate() {
         return new KafkaTemplate<>(checkProducerFactory());
     }
 
