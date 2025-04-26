@@ -65,6 +65,8 @@ services:
     image: 'bitnami/kafka:3.9'
     networks:
       - mynetwork
+    ports:
+      - "9092:9092"
     environment:
       - KAFKA_ENABLE_KRAFT=yes
       - KAFKA_CFG_NODE_ID=1
