@@ -44,7 +44,7 @@ public class FeignConfig {
     private RetryConfig retryDefaultConfig() {
         return RetryConfig.custom()
                 .maxAttempts(3)
-                .waitDuration(Duration.ofSeconds(1))
+                .waitDuration(Duration.ofSeconds(3))
                 .build();
     }
 }
