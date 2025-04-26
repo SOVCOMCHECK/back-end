@@ -1,9 +1,11 @@
 package ru.sovcomcheck.back_end.checkservice.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class Item {
     @JsonProperty("name")
     private String name;
