@@ -5,11 +5,11 @@ spring:
       max-request-size: 200MB
   data:
     mongodb:
-      host: localhost
+      host: ${mongo_host}
       port: 27017
       database: mongodb
 kafka:
-   bootstrap-servers: ${kafka_bootstrap_servers:localhost:9092}
+   bootstrap-servers: ${kafka_bootstrap_servers}
    topic:
      checkTopic: check-topic
    producer:
@@ -18,9 +18,9 @@ kafka:
      linger-ms: 1
 
 minio:
-  url: ${minio_url:http://localhost:9000}
-  accessKey: ${minio_access_key:minioadmin}
-  secretKey: ${minio_secret_key:minioadmin}
+  url: ${minio_url}
+  accessKey: ${minio_access_key}
+  secretKey: ${minio_secret_key}
   buckets:
     avatars: avatars
     checks: checks
