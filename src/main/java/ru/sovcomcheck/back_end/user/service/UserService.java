@@ -34,8 +34,9 @@ public class UserService {
     }
 
     public UserDto getUserDtoById(String id) {
-        Optional<User> user = userRepository.findById(id);
-        return userMapper.entityToDto(user.orElseThrow());
+        return userRepository.findById(id)
+                .map(userMapper::entityToDto)
+                .orElseThrow(RuntimeException::new);
     }
 
     public FileDTO uploadAvatar(MultipartFile file, String bucket, String id) throws Exception{
@@ -50,7 +51,7 @@ public class UserService {
     }
 
     public User getUserById(String id) {
-        return userRepository.findById(id).orElseThrow();
+        return userRepository.findById(id).orElse(null);
     }
 
     public byte[] downloadAvatar(String id, String bucket) {
