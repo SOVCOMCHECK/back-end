@@ -9,7 +9,7 @@ spring:
       port: 27017
       database: mongodb
 kafka:
-   bootstrap-servers: localhost:9092
+   bootstrap-servers: ${kafka_bootstrap_servers:localhost:9092}
    topic:
      checkTopic: check-topic
    producer:
@@ -18,9 +18,9 @@ kafka:
      linger-ms: 1
 
 minio:
-  url: http://localhost:9000
-  accessKey: minioadmin
-  secretKey: minioadmin
+  url: ${minio_url:http://localhost:9000}
+  accessKey: ${minio_access_key:minioadmin}
+  secretKey: ${minio_secret_key:minioadmin}
   buckets:
     avatars: avatars
     checks: checks
@@ -30,6 +30,9 @@ receipt:
   api:
     url: https://proverkacheka.com/api/v1/check/get
     token: 32540.G5winiT7cjsbp6Pa5
+
+ml-service:
+  url: ${ml_service_url}
 
 server:
   port: 8080
