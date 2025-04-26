@@ -12,6 +12,7 @@ import ru.sovcomcheck.back_end.checkservice.enums.ProcessingStatus;
 import ru.sovcomcheck.back_end.checkservice.exceptions.CheckProcessingException;
 import ru.sovcomcheck.back_end.checkservice.kafka.KafkaProducerService;
 import ru.sovcomcheck.back_end.checkservice.repositories.CheckRepository;
+import ru.sovcomcheck.back_end.checkservice.services.ClassifierApiService;
 import ru.sovcomcheck.back_end.checkservice.services.ReceiptApiService;
 import ru.sovcomcheck.back_end.photoservice.dtos.FileDTO;
 import ru.sovcomcheck.back_end.photoservice.enums.BucketEnum;
@@ -26,6 +27,7 @@ public class CheckFacade {
     private final ReceiptApiService receiptApiService;
     private final CheckRepository checkRepository;
     private final KafkaProducerService kafkaProducerService;
+    private final ClassifierApiService classifierApiService;
 
     @Transactional
     public CheckProcessingResponse processReceipt(MultipartFile file) {
@@ -86,6 +88,7 @@ public class CheckFacade {
         document.setStatus(CheckStatus.APPROVED);
         document.setConfirmedAt(LocalDateTime.now());
         document.getCheckData().setIsApplied(true);
+        document.setCategory(classifierApiService.predictCategory(document.getCheckData()));
         checkRepository.save(document);
         kafkaProducerService.sendCheck(document.getCheckData());
     }

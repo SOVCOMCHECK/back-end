@@ -21,6 +21,7 @@ public class CheckDocument {
     private String id;
     private String minioImageUrl;
     private Check checkData;
+    private String category;
     private CheckStatus status;
     private LocalDateTime processedAt;
     private LocalDateTime confirmedAt;
