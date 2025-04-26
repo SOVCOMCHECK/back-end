@@ -16,10 +16,10 @@ public interface CheckMapper {
 
     CheckMapper INSTANCE = Mappers.getMapper(CheckMapper.class);
 
-    @Mapping(target = "dateTime", source = "checkData.data.json.dateTime")
-    @Mapping(target = "organization", source = "checkData.data.json.user")
-    @Mapping(target = "address", source = "checkData.data.json.retailPlaceAddress")
-    @Mapping(target = "inn", source = "checkData.data.json.userInn")
+    @Mapping(target = "dateTime", source = "checkData.data.json.date")
+    @Mapping(target = "organization", source = "checkData.data.json.organization")
+    @Mapping(target = "address", source = "checkData.data.json.address")
+    @Mapping(target = "inn", source = "checkData.data.json.inn")
     @Mapping(target = "operationType", source = "checkData.data.json.operationType")
     @Mapping(target = "items", source = "checkData.data.json.items", qualifiedByName = "mapItems")
     @Mapping(target = "totalSum", source = "checkData.data.json.totalSum")
