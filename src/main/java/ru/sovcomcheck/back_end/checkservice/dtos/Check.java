@@ -16,8 +16,14 @@ public class Check {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("userId")
+    private String userId;
+
     @JsonProperty("isApplied")
     private Boolean isApplied;
+
+    @JsonProperty("imageUrl")
+    private String imageUrl;
 
     @JsonProperty("code")
     private Code code;

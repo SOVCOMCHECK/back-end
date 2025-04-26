@@ -10,13 +10,12 @@ import ru.sovcomcheck.back_end.checkservice.dtos.Check;
 
 @FeignClient(
         name = "receiptApiClient",
-        url = "https://proverkacheka.com/api/v1",
+        url = "${receipt.api.url}",
         configuration = FeignConfig.class
 )
 public interface ReceiptApiClient {
 
     @PostMapping(
-            value = "/check/get",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )

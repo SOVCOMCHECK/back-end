@@ -11,7 +11,7 @@ public class KafkaProducerService {
     private final KafkaTemplate<String, Check> kafkaTemplate;
 
     public void sendCheck(Check check) {
-        kafkaTemplate.send("check-analysis-topic", check);
+        kafkaTemplate.send("check-topic", check);
     }
 
 }

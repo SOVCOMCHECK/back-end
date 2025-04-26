@@ -1,6 +1,10 @@
 package ru.sovcomcheck.back_end.checkservice.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,10 +24,11 @@ import ru.sovcomcheck.back_end.checkservice.facades.CheckFacade;
 public class CheckController {
     private final CheckFacade checkFacade;
 
-    @PostMapping("/process")
+    @PostMapping("/users/{userId}/process")
     public ResponseEntity<CheckProcessingResponse> processReceipt(
+            @PathVariable String userId,
             @RequestParam("file") MultipartFile file) {
-        CheckProcessingResponse response = checkFacade.processReceipt(file);
+        CheckProcessingResponse response = checkFacade.processReceipt(userId, file);
         return response.getStatus() == ProcessingStatus.FAILED
                 ? ResponseEntity.badRequest().body(response)
                 : ResponseEntity.ok(response);
@@ -40,5 +45,12 @@ public class CheckController {
     @GetMapping("/{id}")
     public ResponseEntity<Check> getCheck(@PathVariable String id) {
         return ResponseEntity.ok(checkFacade.getCheckById(id));
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<Page<Check>> getUserChecks(
+            @PathVariable String userId,
+            @PageableDefault(size = 10, sort = "processedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(checkFacade.getUserChecks(userId, pageable));
     }
 }

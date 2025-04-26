@@ -1,6 +1,8 @@
 package ru.sovcomcheck.back_end.checkservice.facades;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,14 +32,15 @@ public class CheckFacade {
     private final ClassifierApiService classifierApiService;
 
     @Transactional
-    public CheckProcessingResponse processReceipt(MultipartFile file) {
+    public CheckProcessingResponse processReceipt(String userId, MultipartFile file) {
         try {
             // 1. Сохраняем фото во временный бакет
             FileDTO tempFile = fileService.uploadFile(file, BucketEnum.TEMP_CHECKS.getBucketName());
 
             // 2. Отправляем на API проверки чеков
-            Check check = receiptApiService.processReceipt(file); // Передаем оригинальный файл
+            Check check = receiptApiService.processReceipt(file);
             check.setIsApplied(false);
+            check.setUserId(userId);
 
             // 3. Переносим фото в постоянный бакет
             FileDTO permanentFile = fileService.moveFile(
@@ -45,15 +48,25 @@ public class CheckFacade {
                     BucketEnum.TEMP_CHECKS.getBucketName(),
                     BucketEnum.CHECKS.getBucketName()
             );
+            check.setImageUrl(permanentFile.getUrl());
 
-            // 4. Сохраняем результат в БД
-            CheckDocument document = saveCheckDocument(check, permanentFile.getUrl());
+            // 4. Сохраняем результат в БД с userId
+            CheckDocument document = saveCheckDocument(check);
 
             return buildSuccessResponse(document);
 
         } catch (Exception e) {
             return buildErrorResponse(e);
         }
+    }
+
+    private CheckDocument saveCheckDocument(Check check) {
+        return checkRepository.save(CheckDocument.builder()
+                .userId(check.getUserId())
+                .checkData(check)
+                .status(CheckStatus.PENDING)
+                .processedAt(LocalDateTime.now())
+                .build());
     }
 
     @Transactional(readOnly = true)
@@ -75,13 +88,10 @@ public class CheckFacade {
         }
     }
 
-    private CheckDocument saveCheckDocument(Check check, String imageUrl) {
-        return checkRepository.save(CheckDocument.builder()
-                .minioImageUrl(imageUrl)
-                .checkData(check)
-                .status(CheckStatus.PENDING)
-                .processedAt(LocalDateTime.now())
-                .build());
+    @Transactional(readOnly = true)
+    public Page<Check> getUserChecks(String userId, Pageable pageable) {
+        return checkRepository.findByUserId(userId, pageable)
+                .map(CheckDocument::getCheckData);
     }
 
     private void approveCheck(CheckDocument document) {
@@ -95,7 +105,7 @@ public class CheckFacade {
 
     private void rejectCheck(CheckDocument document) {
         fileService.deleteFile(
-                extractFilename(document.getMinioImageUrl()),
+                extractFilename(document.getCheckData().getImageUrl()),
                 BucketEnum.CHECKS.getBucketName()
         );
         checkRepository.delete(document);

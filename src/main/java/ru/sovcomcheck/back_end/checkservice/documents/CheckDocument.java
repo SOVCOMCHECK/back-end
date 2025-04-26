@@ -11,15 +11,15 @@ import ru.sovcomcheck.back_end.checkservice.enums.CheckStatus;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "checks")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Document(collection = "checks")
 public class CheckDocument {
     @Id
     private String id;
-    private String minioImageUrl;
+    private String userId;
     private Check checkData;
     private String category;
     private CheckStatus status;
