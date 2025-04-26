@@ -2,6 +2,7 @@ package ru.sovcomcheck.back_end.checkservice.facades;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ import ru.sovcomcheck.back_end.photoservice.dtos.FileDTO;
 import ru.sovcomcheck.back_end.photoservice.enums.BucketEnum;
 import ru.sovcomcheck.back_end.photoservice.services.FileService;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -72,12 +76,19 @@ public class CheckFacade {
     }
 
     private CheckDocument saveCheckDocument(Check check) {
-        return checkRepository.save(CheckDocument.builder()
+        if (check.getId() == null) {
+            check.setId(new ObjectId().toString());
+        }
+
+        CheckDocument document = CheckDocument.builder()
+                .id(check.getId())
                 .userId(check.getUserId())
                 .checkData(check)
                 .status(CheckStatus.PENDING)
                 .processedAt(LocalDateTime.now())
-                .build());
+                .build();
+
+        return checkRepository.save(document);
     }
 
     @Transactional(readOnly = true)
@@ -128,15 +139,18 @@ public class CheckFacade {
         checkRepository.delete(document);
     }
 
-    private String extractFilename(String url) {
-        if (url == null || url.isEmpty()) return "";
-        int lastSlashIndex = url.lastIndexOf('/');
-        if (lastSlashIndex == -1) return url;
-        return url.substring(lastSlashIndex + 1);
+    private String extractFilename(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            String path = url.getPath();
+            return Paths.get(path).getFileName().toString();
+        } catch (MalformedURLException e) {
+            log.error("Malformed URL: {}", urlString, e);
+            throw new IllegalArgumentException();
+        }
     }
 
     private CheckProcessingResponse buildSuccessResponse(CheckDocument document) {
-        document.getCheckData().setId(document.getId());
         return CheckProcessingResponse.builder()
                 .checkId(document.getId())
                 .checkData(document.getCheckData())
