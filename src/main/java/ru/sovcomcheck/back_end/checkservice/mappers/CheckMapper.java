@@ -11,8 +11,9 @@ import ru.sovcomcheck.back_end.checkservice.dtos.Item;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface CheckMapper {
+
     CheckMapper INSTANCE = Mappers.getMapper(CheckMapper.class);
 
     @Mapping(target = "dateTime", source = "checkData.data.json.dateTime")
